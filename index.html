@@ -3,27 +3,137 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kells Nollenberger</title>
-    <meta name="description" content="Kells Nollenberger - musician, operator, and creative projects." />
+    <title>Kells Nollenberger | Music, Operations, and Community</title>
+    <meta
+      name="description"
+      content="Personal website of Kells Nollenberger, a Brooklyn-based musician and operator building projects rooted in sound, hospitality, and community."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="wrap">
-      <p class="eyebrow">Brooklyn, NY</p>
-      <h1>Kells Nollenberger</h1>
-      <p class="lead">Musician, operator, and builder of projects rooted in sound, hospitality, and community.</p>
-      <section>
-        <h2>Projects</h2>
-        <ul>
-          <li><a href="https://freshpops.nyc">FRESH POPS</a></li>
-          <li>Paul Brady Wine</li>
-          <li>Live + studio work</li>
-        </ul>
+    <div class="noise" aria-hidden="true"></div>
+
+    <header class="hero">
+      <nav class="nav shell">
+        <a href="#top" class="wordmark">Kells Nollenberger</a>
+        <div class="nav-links">
+          <a href="#work">Work</a>
+          <a href="#projects">Projects</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </nav>
+
+      <div class="shell hero-content" id="top">
+        <p class="kicker">Brooklyn, New York</p>
+        <h1>Music-first work with operational backbone.</h1>
+        <p class="lead">
+          I am a musician and operator building places and projects where artists,
+          neighbors, and ideas can actually stay in motion.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-solid" href="mailto:info@freshpops.nyc">Get In Touch</a>
+          <a class="btn btn-outline" href="https://freshpops.nyc" target="_blank" rel="noreferrer">Visit Fresh Pops</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section shell reveal" id="work">
+        <p class="section-label">What I Do</p>
+        <h2>I build at the intersection of sound, hospitality, and neighborhood life.</h2>
+        <div class="grid cards">
+          <article class="card">
+            <h3>Music</h3>
+            <p>
+              Live and studio work across multiple genres, with a focus on
+              rooms that reward listening.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Operations</h3>
+            <p>
+              Practical systems that keep teams steady and guest experience
+              consistent.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Community</h3>
+            <p>
+              Programming and partnerships that make creative spaces useful to
+              the people around them.
+            </p>
+          </article>
+        </div>
       </section>
-      <section>
-        <h2>Contact</h2>
-        <p><a href="mailto:info@freshpops.nyc">info@freshpops.nyc</a></p>
+
+      <section class="section section-alt reveal" id="projects">
+        <div class="shell">
+          <p class="section-label">Selected Projects</p>
+          <h2>Current focus</h2>
+          <div class="grid project-grid">
+            <article class="project-card">
+              <p class="project-type">Founder / Operator</p>
+              <h3>Fresh Pops</h3>
+              <p>
+                A music-first neighborhood bar in Bed-Stuy designed for strong
+                weeknight culture, clear sound, and reliable hospitality.
+              </p>
+              <a href="https://freshpops.nyc" target="_blank" rel="noreferrer">freshpops.nyc</a>
+            </article>
+
+            <article class="project-card">
+              <p class="project-type">Hospitality + Brand</p>
+              <h3>Paul Brady Wine</h3>
+              <p>
+                Ongoing work at the overlap of guest experience, product, and
+                operations.
+              </p>
+            </article>
+
+            <article class="project-card">
+              <p class="project-type">Performance</p>
+              <h3>Live + Studio Collaborations</h3>
+              <p>
+                Supporting artists and projects that care about songs,
+                musicianship, and room energy.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section shell reveal" id="approach">
+        <p class="section-label">Approach</p>
+        <h2>Respect the craft. Keep the room warm. Make it run.</h2>
+        <blockquote>
+          Great projects come from creative standards paired with operational
+          discipline.
+        </blockquote>
+      </section>
+
+      <section class="section shell reveal" id="contact">
+        <p class="section-label">Contact</p>
+        <h2>Open to conversations about projects, performances, and partnerships.</h2>
+        <div class="contact-box">
+          <p><strong>Email:</strong> <a href="mailto:info@freshpops.nyc">info@freshpops.nyc</a></p>
+          <p><strong>Instagram:</strong> <a href="https://instagram.com/freshpopsnyc" target="_blank" rel="noreferrer">@freshpopsnyc</a></p>
+        </div>
       </section>
     </main>
+
+    <footer class="footer">
+      <div class="shell footer-wrap">
+        <p>Kells Nollenberger</p>
+        <p>&copy; <span id="year"></span> Brooklyn, NY</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
   </body>
 </html>
