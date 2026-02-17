@@ -29,7 +29,10 @@
 
       <section class="contact">
         <h2>Write me</h2>
-        <form action="mailto:kells.nollenberger@gmail.com" method="post" enctype="text/plain">
+        <form action="https://formsubmit.co/kells.nollenberger@gmail.com" method="post">
+          <input type="hidden" name="_subject" value="New message from kellsnollenberger.com (V3)" />
+          <input type="hidden" name="_next" value="https://kellsnollenberger.com/submitted.html" />
+          <input type="hidden" name="_captcha" value="false" />
           <div class="row">
             <input name="name" type="text" placeholder="Name" required />
             <input name="email" type="email" placeholder="Email" required />

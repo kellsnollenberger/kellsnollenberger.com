@@ -1,9 +1,11 @@
 :root {
-  --cream: #f8f6ef;
-  --ink: #121212;
-  --red: #da3a2f;
-  --blue: #1345b8;
-  --line: #1d1d1d;
+  --bg: #0c0b0c;
+  --panel: #171418;
+  --panel-alt: #1e1820;
+  --ink: #f6f2ec;
+  --muted: #c6bcb1;
+  --red: #e66a45;
+  --line: #403545;
 }
 * { box-sizing: border-box; }
 body {
@@ -11,8 +13,9 @@ body {
   font-family: "DM Sans", sans-serif;
   color: var(--ink);
   background:
-    linear-gradient(90deg, transparent 49.5%, rgba(0,0,0,0.06) 49.5%, rgba(0,0,0,0.06) 50.5%, transparent 50.5%),
-    var(--cream);
+    radial-gradient(circle at 8% 8%, #221d26 0%, transparent 28%),
+    radial-gradient(circle at 100% 0%, #2a1d1b 0%, transparent 34%),
+    var(--bg);
 }
 .layout {
   width: min(1100px, 94vw);
@@ -22,7 +25,7 @@ body {
   gap: 1rem;
 }
 .hero {
-  background: linear-gradient(130deg, #fff 0%, #fff 55%, #ffe6d9 55%, #ffe6d9 100%);
+  background: linear-gradient(130deg, var(--panel) 0%, var(--panel) 55%, #2a1e22 55%, #2a1e22 100%);
   border: 2px solid var(--line);
   padding: 1rem;
 }
@@ -32,6 +35,7 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 700;
+  color: var(--muted);
 }
 h1 {
   margin: 0.35rem 0 0;
@@ -53,6 +57,7 @@ h1 {
   border-bottom: 2px solid var(--ink);
   font-weight: 700;
 }
+.quick a:hover { color: var(--red); border-bottom-color: var(--red); }
 .shots {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -66,7 +71,7 @@ h1 {
 }
 .contact {
   border: 2px solid var(--line);
-  background: linear-gradient(180deg, #e6eeff 0%, #ffffff 100%);
+  background: linear-gradient(180deg, var(--panel-alt) 0%, var(--panel) 100%);
   padding: 1rem;
 }
 h2 {
@@ -80,16 +85,18 @@ form { display: grid; gap: 0.6rem; }
 input, textarea {
   width: 100%;
   border: 2px solid var(--line);
-  background: #fff;
+  background: #100f12;
+  color: var(--ink);
   padding: 0.65rem;
   font: inherit;
 }
+input::placeholder, textarea::placeholder { color: #91867d; }
 button {
   width: max-content;
   padding: 0.55rem 0.95rem;
   border: 2px solid var(--line);
   background: var(--red);
-  color: #fff;
+  color: #120f0e;
   font-weight: 700;
   text-transform: uppercase;
   cursor: pointer;
