@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kells Nollenberger — V3</title>
+    <meta name="description" content="Kells Nollenberger. Musician and operator." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <header class="hero">
+        <p>Brooklyn, NY</p>
+        <h1>Kells Nollenberger</h1>
+        <p class="tag">Musician and operator.</p>
+        <div class="quick">
+          <a href="mailto:kells.nollenberger@gmail.com">kells.nollenberger@gmail.com</a>
+          <a href="https://instagram.com/kellsn" target="_blank" rel="noreferrer">@kellsn</a>
+        </div>
+      </header>
+
+      <section class="shots">
+        <img src="../assets/photos/performance-blackwhite.jpeg" alt="Performance portrait of Kells." loading="lazy" />
+        <img src="../assets/photos/studio-bass.jpeg" alt="Kells with upright bass." loading="lazy" />
+      </section>
+
+      <section class="contact">
+        <h2>Write me</h2>
+        <form action="mailto:kells.nollenberger@gmail.com" method="post" enctype="text/plain">
+          <div class="row">
+            <input name="name" type="text" placeholder="Name" required />
+            <input name="email" type="email" placeholder="Email" required />
+          </div>
+          <textarea name="message" rows="4" placeholder="Message" required></textarea>
+          <button type="submit">Send</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

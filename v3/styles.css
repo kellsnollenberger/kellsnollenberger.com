@@ -1,0 +1,101 @@
+:root {
+  --cream: #f8f6ef;
+  --ink: #121212;
+  --red: #da3a2f;
+  --blue: #1345b8;
+  --line: #1d1d1d;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, transparent 49.5%, rgba(0,0,0,0.06) 49.5%, rgba(0,0,0,0.06) 50.5%, transparent 50.5%),
+    var(--cream);
+}
+.layout {
+  width: min(1100px, 94vw);
+  margin: 0 auto;
+  padding: 1.2rem 0 2.4rem;
+  display: grid;
+  gap: 1rem;
+}
+.hero {
+  background: linear-gradient(130deg, #fff 0%, #fff 55%, #ffe6d9 55%, #ffe6d9 100%);
+  border: 2px solid var(--line);
+  padding: 1rem;
+}
+.hero > p:first-child {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+h1 {
+  margin: 0.35rem 0 0;
+  font-family: "Archivo Black", sans-serif;
+  font-size: clamp(2.3rem, 8.2vw, 6rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+.tag { margin: 0.45rem 0 0; font-size: 1.1rem; }
+.quick {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+.quick a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 2px solid var(--ink);
+  font-weight: 700;
+}
+.shots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.shots img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  border: 2px solid var(--line);
+}
+.contact {
+  border: 2px solid var(--line);
+  background: linear-gradient(180deg, #e6eeff 0%, #ffffff 100%);
+  padding: 1rem;
+}
+h2 {
+  margin: 0 0 0.65rem;
+  font-family: "Archivo Black", sans-serif;
+  text-transform: uppercase;
+  font-size: 1.05rem;
+}
+form { display: grid; gap: 0.6rem; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+input, textarea {
+  width: 100%;
+  border: 2px solid var(--line);
+  background: #fff;
+  padding: 0.65rem;
+  font: inherit;
+}
+button {
+  width: max-content;
+  padding: 0.55rem 0.95rem;
+  border: 2px solid var(--line);
+  background: var(--red);
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+@media (max-width: 860px) {
+  .shots { grid-template-columns: 1fr; }
+  .shots img { height: 290px; }
+  .row { grid-template-columns: 1fr; }
+}
