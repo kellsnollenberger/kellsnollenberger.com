@@ -1,11 +1,11 @@
 :root {
-  --bg: #0c0b0c;
-  --panel: #171418;
-  --panel-alt: #1e1820;
-  --ink: #f6f2ec;
-  --muted: #c6bcb1;
-  --red: #e66a45;
-  --line: #403545;
+  --bg: #060607;
+  --panel: #0f1012;
+  --panel-alt: #14151a;
+  --ink: #f3f0ea;
+  --muted: #a9a39a;
+  --red: #d65f3b;
+  --line: #2a2d35;
 }
 * { box-sizing: border-box; }
 body {
@@ -13,8 +13,8 @@ body {
   font-family: "DM Sans", sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(circle at 8% 8%, #221d26 0%, transparent 28%),
-    radial-gradient(circle at 100% 0%, #2a1d1b 0%, transparent 34%),
+    radial-gradient(circle at 8% 8%, #171a22 0%, transparent 30%),
+    radial-gradient(circle at 100% 0%, #1a1317 0%, transparent 34%),
     var(--bg);
 }
 .layout {
@@ -25,7 +25,7 @@ body {
   gap: 1rem;
 }
 .hero {
-  background: linear-gradient(130deg, var(--panel) 0%, var(--panel) 55%, #2a1e22 55%, #2a1e22 100%);
+  background: linear-gradient(130deg, var(--panel) 0%, var(--panel) 55%, #171820 55%, #171820 100%);
   border: 2px solid var(--line);
   padding: 1rem;
 }
@@ -71,7 +71,7 @@ h1 {
 }
 .contact {
   border: 2px solid var(--line);
-  background: linear-gradient(180deg, var(--panel-alt) 0%, var(--panel) 100%);
+  background: linear-gradient(180deg, var(--panel-alt) 0%, #0f1115 100%);
   padding: 1rem;
 }
 h2 {
@@ -85,22 +85,23 @@ form { display: grid; gap: 0.6rem; }
 input, textarea {
   width: 100%;
   border: 2px solid var(--line);
-  background: #100f12;
+  background: #0a0b0e;
   color: var(--ink);
   padding: 0.65rem;
   font: inherit;
 }
-input::placeholder, textarea::placeholder { color: #91867d; }
+input::placeholder, textarea::placeholder { color: #7c7f8b; }
 button {
   width: max-content;
   padding: 0.55rem 0.95rem;
   border: 2px solid var(--line);
   background: var(--red);
-  color: #120f0e;
+  color: #fff;
   font-weight: 700;
   text-transform: uppercase;
   cursor: pointer;
 }
+button:hover { filter: brightness(1.08); }
 @media (max-width: 860px) {
   .shots { grid-template-columns: 1fr; }
   .shots img { height: 290px; }
