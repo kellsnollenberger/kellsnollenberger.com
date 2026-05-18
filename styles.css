@@ -4,6 +4,8 @@
   --fg: #f5efe4;
   --muted: #c9bcaa;
   --accent: #df835c;
+  --paul-brady-orange: #f47a24;
+  --fresh-pops-red: #b33e26;
   --line: #3f352d;
   --panel: rgba(18, 15, 13, 0.62);
 }
@@ -107,14 +109,26 @@ h1 {
 }
 
 .bio a {
-  color: #ffd0b8;
-  text-decoration-color: var(--accent);
   text-underline-offset: 0.18em;
   text-decoration-thickness: 0.08em;
 }
 
-.bio a:visited {
-  color: #ffd0b8;
+.bio a.brand-link-pbw {
+  color: var(--paul-brady-orange);
+  text-decoration-color: var(--paul-brady-orange);
+}
+
+.bio a.brand-link-freshpops {
+  color: var(--fresh-pops-red);
+  text-decoration-color: var(--fresh-pops-red);
+}
+
+.bio a.brand-link-pbw:visited {
+  color: var(--paul-brady-orange);
+}
+
+.bio a.brand-link-freshpops:visited {
+  color: var(--fresh-pops-red);
 }
 
 .bio a:hover,
