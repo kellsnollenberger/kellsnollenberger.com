@@ -1,8 +1,8 @@
 import {points,scoreOutcomes} from './engine.js';
 import {Game} from './game.js';
 const $=id=>document.getElementById(id),money=c=>(c/100).toLocaleString('en-US',{style:'currency',currency:'USD'}),pct=x=>(x*100).toFixed(1)+'%';
-let game,showLens=false;
-function fresh(bank=10000,count=3,bet=500){game=new Game(bank,count,bet);showLens=false;render();}
+let game,showLens=true;
+function fresh(bank=10000,count=3,bet=500){game=new Game(bank,count,bet);showLens=true;render();}
 function setSelection(indices){game.setSelection(indices);render();}
 function action(){game.action();$('settings').hidden=true;render();}
 const pipLocations={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
@@ -20,7 +20,7 @@ function render(){
   $('dice').innerHTML=myTurn?dice.map((f,i)=>`<button class="die ${f===3?'three':''} ${selection.has(i)?'selected':''}" data-die="${i}" aria-label="Die ${i+1}: ${f}, ${points(f)} points" aria-pressed="${selection.has(i)}">${pipLocations[f].map(p=>`<span class="pip" style="grid-row:${Math.floor(p/3)+1};grid-column:${p%3+1}"></span>`).join('')}</button>`).join(''):phase==='ready'?[3,1,3,2,3].map(f=>`<span class="die ${f===3?'three':''}">${pipLocations[f].map(p=>`<span class="pip" style="grid-row:${Math.floor(p/3)+1};grid-column:${p%3+1}"></span>`).join('')}</span>`).join(''):'';
   $('clear').hidden=!myTurn||selection.size===0;$('action').disabled=myTurn&&!selection.size;
   if(phase==='ready'){
-    $('phase').textContent='TAKE YOUR SEAT';$('headline').textContent='Let the low rolls win.';$('message').textContent='Threes count as zero. Hold at least one die each roll.';$('action').textContent=`Deal me in · ${money(ante)} ante`;$('hint').textContent='Play money only · strategy starts hidden';
+    $('phase').textContent='TAKE YOUR SEAT';$('headline').textContent='Let the low rolls win.';$('message').textContent='Threes count as zero. Hold at least one die each roll.';$('action').textContent=`Deal me in · ${money(ante)} ante`;$('hint').textContent='Play money only · strategy shown automatically';
   }else if(phase==='bust'){
     $('phase').textContent='TURN ENDED · BUST';$('headline').textContent=active()===0?'You’re bust.':`${players[active()].name} is bust.`;
     $('message').textContent=game.bustReason+' No more dice to play.';

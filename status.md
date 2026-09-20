@@ -10,3 +10,5 @@ Live domain: kellsnollenberger.com. GitHub Pages publishes the repository's `mai
 - Keep the simulator out of homepage navigation and sitemaps. Preserve the root `CNAME` and existing homepage when updating the game.
 
 - Added Score → win odds: live-table and first-to-roll scenarios, 2–5 players, conditional outcomes for scores 0–30, and 50/75/90% outright-win targets. Uses the existing independent minimum-mean opponent forecast, explicitly labeled as an estimate; playoff ties are separate from outright wins. Verified probability sums, monotonicity, known-score thresholds, controls, and game regressions.
+
+- Matched simulator styling to the main website: Cairo headings, IBM Plex Mono text, dark brown background, cream text, copper accents, square panels. Strategy advice is shown automatically on rolls; score-to-odds section opens by default. Hide/reveal remains available. Asset version query avoids stale styling after this update.
