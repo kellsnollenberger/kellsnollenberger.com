@@ -67,3 +67,10 @@ export function settle(order,scores,pot){
   return {low,winners,leader:tied?null:winners[0],playoffOrder:tied?[...winners].reverse():[],awards:tied?[]:[{id:winners[0],cents:pot}]};
 }
 export function rollDice(n,random=Math.random){return Array.from({length:n},()=>1+Math.floor(random()*6));}
+
+// Conditional outcomes for an already-posted total under the same forecast as holds.
+export function scoreOutcomes(known=[],future=0){
+  if(!Number.isInteger(future)||future<0||future>4)throw new Error('Use zero to four unplayed opponents.');
+  const advisor=createAdvisor(known,future);
+  return advisor.terminal.map((value,score)=>({score,win:Math.max(0,Math.min(1,value.win)),tie:Math.max(0,Math.min(1,value.tie)),lose:Math.max(0,Math.min(1,1-value.survive))}));
+}

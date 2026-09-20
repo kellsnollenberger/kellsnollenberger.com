@@ -1,4 +1,4 @@
-import {points} from './engine.js';
+import {points,scoreOutcomes} from './engine.js';
 import {Game} from './game.js';
 const $=id=>document.getElementById(id),money=c=>(c/100).toLocaleString('en-US',{style:'currency',currency:'USD'}),pct=x=>(x*100).toFixed(1)+'%';
 let game,showLens=false;
@@ -49,6 +49,7 @@ function render(){
     $('phase').textContent=`POSITION ${cursor+1} OF ${order.length}`;$('headline').textContent=`${players[active()].name} is up.`;$('message').textContent=advisor.known.length?`Low score to beat: ${advisor.target}. ${players[active()].name} can use every posted score.`:'First to act. No scores to condition on yet.';$('action').textContent=`Play ${players[active()].name}’s turn`;$('hint').textContent='Advance one seat at a time to follow the table.';
   }
   renderLens(myTurn);
+  renderScoreOdds();
   $('history').innerHTML=history.length?history.slice(0,12).map(h=>`<div class="ledger-row"><span>#${h.round}</span><span>${h.winners} · score ${h.low}${h.playoffs?' · '+h.playoffs+' playoff'+(h.playoffs===1?'':'s'):''}</span><span class="${h.net>=0?'positive':'negative'}">${h.net>=0?'+':'−'}${money(Math.abs(h.net))}</span></div>`).join(''):'<p class="muted">Your table’s story starts with the first roll.</p>';
 }
 function renderLens(myTurn){
@@ -62,6 +63,27 @@ function renderLens(myTurn){
   $('lensBody').innerHTML=`<div class="analysis"><p><b>${isMean?'First to act · minimize expected score':`Playing to beat ${advisor.target} · maximize win-or-playoff chance`}</b><br>${advisor.future?`${advisor.future} player${advisor.future===1?'':'s'} still to act. Round odds are estimated.`:'Last to act. This pass’s win and tie probabilities are exact.'}</p><div class="recommend"><span class="eyebrow">BEST HOLD${options.filter(h=>sameObjective(h,best)).length>1?' · JOINT BEST':''}</span><strong>${holdText(best)}</strong><small>${best.mean.toFixed(2)} expected score · ${pct(best.survive)} win or reach playoff</small><br><button id="useBest" class="quiet" style="margin-top:12px">Select this hold</button></div><div class="option-list"><table><thead><tr><th>HOLD</th><th>WIN</th><th>TIE</th><th>AVG.</th><th>ALIVE</th></tr></thead><tbody>${options.map(h=>{const isBest=sameObjective(h,best),isWorst=sameObjective(h,worst)&&!isBest;return `<tr class="${isBest?'best':isWorst?'worst':''}"><td>${holdText(h)}${h.faces.join(',')===selected?' ✓':''}<span class="badge">${isBest?'BEST':isWorst?'WORST':''}</span></td><td>${pct(h.win)}</td><td>${pct(h.tie)}</td><td>${h.mean.toFixed(2)}</td><td>${pct(h.survive)}</td></tr>`;}).join('')}</tbody></table></div><p>Win = take the pot now. Tie = enter a playoff. Alive = win + tie. AVG. projects a completed five-dice score, even when play would end early as a bust. Identical dice holds are grouped. All holds assume advised play on later rolls. Ties are ranked as staying alive; these are not eventual playoff-win odds or bankroll-return estimates.</p>${advisor.future?'<p>Forecast: unplayed opponents minimize expected score. Actual computers adapt to posted scores; these odds are estimates.</p>':''}</div>`;
   $('useBest').onclick=()=>setSelection(best.indices);
 }
+function renderScoreOdds(){
+  const first=$('oddsMode').value==='first';
+  $('oddsPlayersLabel').hidden=!first;
+  let known=[],future=0,context='';
+  if(first){future=Number($('oddsPlayers').value)-1;context=`First to roll · ${future+1} players total`;}
+  else{
+    let seats=game.order;
+    if(game.phase==='complete')seats=game.eligible();
+    if(game.phase==='tie')seats=game.previous.playoffOrder;
+    const fresh=['ready','complete','tie'].includes(game.phase);
+    if(!seats.includes(0)||seats.length<2){$('scoreOddsBody').innerHTML='<p>You are not in the next playable field. Choose “First to roll” to explore another scenario.</p>';return;}
+    const opponents=seats.filter(i=>i!==0);
+    known=fresh?[]:opponents.filter(i=>Object.hasOwn(game.scores,i)).map(i=>game.scores[i]).filter(Number.isFinite);
+    future=fresh?opponents.length:opponents.filter(i=>!Object.hasOwn(game.scores,i)).length;
+    context=`${fresh?'Next pass': 'Current pass'} · ${future} opponent${future===1?'':'s'} with no posted score${known.length?' · posted: '+known.join(', '):''}`;
+  }
+  const rows=scoreOutcomes(known,future),target=Math.min(...known);
+  const goals=[50,75,90].map(goal=>{const qualifying=rows.filter(r=>r.win+1e-12>=goal/100);return `${goal}% win chance: <b>${qualifying.length?'score '+qualifying.at(-1).score+' or less':'not achievable'}</b>`;});
+  $('scoreOddsBody').innerHTML=`<p><b>${context}</b></p>${Number.isFinite(target)?`<p>Score below <b>${target}</b> to have a chance to win outright; match it to stay alive for a playoff.</p>`:''}<div class="score-examples">${[2,4].map(score=>`<div><small>FINISH WITH ${score}</small><strong>${pct(rows[score].win)}</strong><span>win outright</span></div>`).join('')}</div><p>${goals.join('<br>')}</p><div class="option-list"><table><thead><tr><th scope="col">FINAL SCORE</th><th scope="col">WIN</th><th scope="col">PLAYOFF</th><th scope="col">LOSE</th></tr></thead><tbody>${rows.map(r=>`<tr class="${r.score===2||r.score===4?'example-row':''}"><th scope="row">${r.score}</th><td>${pct(r.win)}</td><td>${pct(r.tie)}</td><td>${pct(r.lose)}</td></tr>`).join('')}</tbody></table></div><p>${future?'Estimated: opponents without scores are forecast independently using a minimum-expected-score strategy. Actual computers adapt to targets, so real odds can differ.':'All opponents have posted or busted; current-pass outcomes are certain.'} These odds assume you have already scored the listed total; they are not your chance of rolling it. “Playoff” means tying the lowest score, not eventually winning the pot. Live scenarios are hypothetical replacements for your score.</p>`;
+}
+$('oddsMode').onchange=renderScoreOdds;$('oddsPlayers').onchange=renderScoreOdds;
 $('action').onclick=action;$('clear').onclick=()=>setSelection([]);
 $('dice').onclick=e=>{const b=e.target.closest('[data-die]');if(!b)return;const i=Number(b.dataset.die);game.selection.has(i)?game.selection.delete(i):game.selection.add(i);render();};
 $('lensToggle').onclick=()=>{showLens=!showLens;render();};
