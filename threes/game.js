@@ -1,4 +1,5 @@
-import {points,createAdvisor,rotateOrder,settle,rollDice,isBust} from './engine.js';
+import {points,createAdvisor,rotateOrder,settle,rollDice,isBust} from './engine.js?v=5';
+import {createEVAdvisor} from './playoffs.js?v=5';
 const names=['You','Mara','Jules','Theo','Rae'];
 export class Game {
   constructor(bank=10000,count=3,ante=500,random=Math.random){
@@ -25,7 +26,7 @@ export class Game {
   startPass(){this.scores={};this.busts={};this.cursor=0;this.phase='turn';this.previous=null;this.beginTurn();}
   beginTurn(){
     this.locked=[];this.selection.clear();this.dice=[];this.options=[];this.bustReason='';
-    this.advisor=createAdvisor(this.order.slice(0,this.cursor).map(i=>this.scores[i]),this.order.length-this.cursor-1);
+    this.advisor=this.active()===0?createEVAdvisor({order:this.order,hero:0,scores:this.scores,pot:this.pot,ante:this.ante,paid:this.paid[0]}):createAdvisor(this.order.slice(0,this.cursor).map(i=>this.scores[i]),this.order.length-this.cursor-1);
     if(this.active()===0)this.rollHuman();
   }
   bust(score,forced=false){

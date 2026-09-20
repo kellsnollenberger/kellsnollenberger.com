@@ -1,6 +1,6 @@
 export const points = face => face === 3 ? 0 : face;
 const factorial = [1,1,2,6,24,120];
-const rolls = Array.from({length:6},()=>[]);
+export const rolls = Array.from({length:6},()=>[]);
 export function holds(dice) {
   const unique = new Map();
   for(let mask=1;mask<(1<<dice.length);mask++){
@@ -32,30 +32,31 @@ for(let n=1;n<=5;n++){
 export function isBust(score,target,dice=[]){
   return Number.isFinite(target) && (score>target || (dice.length>0 && score+Math.min(...dice.map(points))>target));
 }
-export function createAdvisor(known=[],future=0){
+export function createAdvisor(known=[],future=0,terminalValues=null){
   known=known.filter(Number.isFinite);
   const target=known.length?Math.min(...known):Infinity;
-  const objective=known.length?'survive':'mean', memo=new Map();
-  const terminal=Array.from({length:31},(_,score)=>{
+  const objective=terminalValues?'ev':known.length?'survive':'mean', memo=new Map();
+  const terminal=terminalValues??Array.from({length:31},(_,score)=>{
     if(score>target)return {survive:0,mean:score,win:0,tie:0};
     const tied=score===target;
     const equal=baseline[5][score],above=baseline[5].slice(score+1).reduce((a,b)=>a+b,0);
     const survive=(equal+above)**future,win=tied?0:above**future;
     return {survive,mean:score,win,tie:Math.max(0,survive-win)};
   });
-  function compare(a,b){return objective==='mean'?(a.mean-b.mean||b.survive-a.survive):(Math.abs(a.survive-b.survive)>1e-12?b.survive-a.survive:Math.abs(a.win-b.win)>1e-12?b.win-a.win:a.mean-b.mean);}
+  function compare(a,b){if(objective==='ev')return Math.abs(a.ev-b.ev)>1e-8?b.ev-a.ev:Math.abs(a.eventual-b.eventual)>1e-12?b.eventual-a.eventual:a.mean-b.mean;return objective==='mean'?(a.mean-b.mean||b.survive-a.survive):(Math.abs(a.survive-b.survive)>1e-12?b.survive-a.survive:Math.abs(a.win-b.win)>1e-12?b.win-a.win:a.mean-b.mean);}
+  const fields=Object.keys(terminal[0]);
   function state(n,score){
     if(!n)return terminal[score];
     const key=n*31+score;if(memo.has(key))return memo.get(key);
-    const result={survive:0,mean:0,win:0,tie:0};
+    const result=Object.fromEntries(fields.map(key=>[key,0]));
     for(const roll of rolls[n]){
       let best=null;
       for(const h of roll.options){const value=state(n-h.count,score+h.sum);if(!best||compare(value,best)<0)best=value;}
-      for(const key of Object.keys(result))result[key]+=best[key]*roll.prob;
+      for(const key of fields)result[key]+=best[key]*roll.prob;
     }
     memo.set(key,result);return result;
   }
-  return {target,objective,known:[...known],future,terminal,state,analyze(dice,score){return holds(dice).map(h=>({...h,...state(dice.length-h.count,score+h.sum)})).sort(compare);}};
+  return {target,objective,known:[...known],future,terminal,state,compare,analyze(dice,score){return holds(dice).map(h=>({...h,...state(dice.length-h.count,score+h.sum)})).sort(compare);}};
 }
 export function rotateOrder(count,leader,eligible=Array.from({length:count},(_,i)=>i)){
   return Array.from({length:count},(_,i)=>(leader+i)%count).filter(i=>eligible.includes(i));
