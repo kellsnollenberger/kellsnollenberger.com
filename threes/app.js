@@ -1,6 +1,6 @@
-import {points} from './engine.js?v=8';
-import {playoffScoreValues,liveRoundChances} from './playoffs.js?v=8';
-import {Game} from './game.js?v=8';
+import {points} from './engine.js?v=9';
+import {playoffScoreValues,liveRoundChances} from './playoffs.js?v=9';
+import {Game} from './game.js?v=9';
 const pushName=n=>n===1?'Push':n===2?'Double push':n===3?'Triple push':`${n}× push`;
 const signedMoney=c=>(c>=0?'+':'−')+money(Math.abs(c));
 const $=id=>document.getElementById(id),money=c=>(c/100).toLocaleString('en-US',{style:'currency',currency:'USD'}),pct=x=>(x*100).toFixed(1)+'%';
@@ -88,7 +88,7 @@ function renderRoundChances(){
   }
   const row=liveRoundChances({order,hero:0,scores,pot,ante,paid});
   const posted=Object.hasOwn(scores,0),score=Number.isFinite(scores[0])?scores[0]:'BUST';
-  $('lensBody').innerHTML=`<div class="analysis round-chances" aria-live="polite"><h3>Your round chances</h3><p>${context}${posted?`<br><b>Your posted score: ${score}</b>`:''}</p><div class="chance-grid">${[['Win outright',row.win],['Push (tie)',row.tie],['Lose this pass',row.lose]].map(([label,value])=>`<div><span>${label}</span><strong>${pct(value)}</strong></div>`).join('')}</div><p><b>${pct(row.eventual)} total chance to win</b>, including repeated pushes.<br>${signedMoney(row.ev)} expected round profit.</p><p>Win outright = take the pot this pass. Push = tie for the lowest score and ante again in reverse order. A push is not a win.</p><p class="forecast-note">${posted?'Uses your actual posted score and all known results.':'Before your turn, this forecast assumes you follow the same target-aware policy as the computers; your choices can change these odds.'} Remaining computer turns use their actual strategy. Future pushes assume that policy for everyone and enough bankroll to re-ante.</p></div>`;
+  $('lensBody').innerHTML=`<div class="analysis round-chances" aria-live="polite"><h3>Your round chances</h3><p>${context}${posted?`<br><b>Your posted score: ${score}</b>`:''}</p><div class="chance-grid">${[['Win outright',row.win],['Push (tie)',row.tie],['Lose this round',row.lose]].map(([label,value])=>`<div><span>${label}</span><strong>${pct(value)}</strong></div>`).join('')}</div><div class="eventual-chance"><span>Eventual win</span><strong>${pct(row.eventual)}</strong><small>Win outright or win after one or more pushes.</small></div><p>${signedMoney(row.ev)} expected round profit.</p><p>Win outright = take the pot this pass. Push = tie for the lowest score and ante again in reverse order. Lose this round = someone beats your score and you are eliminated. Eventual win includes outright wins, so it is not a fourth separate outcome.</p><p class="forecast-note">${posted?'Uses your actual posted score and all known results.':'Before your turn, this forecast assumes you follow the same target-aware policy as the computers; your choices can change these odds.'} Remaining computer turns use their actual strategy. Future pushes assume that policy for everyone and enough bankroll to re-ante.</p></div>`;
 }
 
 function renderScoreOdds(){

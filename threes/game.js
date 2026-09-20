@@ -1,5 +1,5 @@
-import {points,createAdvisor,rotateOrder,settle,rollDice,isBust} from './engine.js?v=8';
-import {createEVAdvisor} from './playoffs.js?v=8';
+import {points,createAdvisor,rotateOrder,settle,rollDice,isBust} from './engine.js?v=9';
+import {createEVAdvisor} from './playoffs.js?v=9';
 const names=['You','Mara','Jules','Theo','Rae'];
 export class Game {
   constructor(bank=10000,count=3,ante=500,random=Math.random){

@@ -20,3 +20,5 @@ Live domain: kellsnollenberger.com. GitHub Pages publishes the repository's `mai
 - Added automatic “Your round chances” between turns: actual posted score and known results determine outright-win, push, loss, eventual-win, and net-profit forecasts. Updates before each remaining player acts, including pushes and busts. Before the human has played, the forecast explicitly assumes the computer policy. Verified against conditional score odds and all initial seat positions with 2–5 players, plus game and rendered UI regressions.
 
 - Bust screens now retain the actual last roll as non-interactive dice for both the human and computers until Continue is pressed. Verified forced human/computer bust displays and game regressions.
+
+- Renamed the live loss card to “Lose this round” and promoted “Eventual win” into its own highlighted percentage card, explaining that it includes outright wins and wins after repeated pushes (not an additional mutually exclusive outcome).
