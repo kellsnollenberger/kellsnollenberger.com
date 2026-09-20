@@ -1,6 +1,6 @@
-import {points} from './engine.js?v=6';
-import {playoffScoreValues} from './playoffs.js?v=6';
-import {Game} from './game.js?v=6';
+import {points} from './engine.js?v=7';
+import {playoffScoreValues,liveRoundChances} from './playoffs.js?v=7';
+import {Game} from './game.js?v=7';
 const pushName=n=>n===1?'Push':n===2?'Double push':n===3?'Triple push':`${n}× push`;
 const signedMoney=c=>(c>=0?'+':'−')+money(Math.abs(c));
 const $=id=>document.getElementById(id),money=c=>(c/100).toLocaleString('en-US',{style:'currency',currency:'USD'}),pct=x=>(x*100).toFixed(1)+'%';
@@ -59,7 +59,7 @@ function renderLens(myTurn){
   const {options,advisor,selection,dice}=game;
   $('lensToggle').textContent=showLens?'Hide':'Reveal';$('lensToggle').setAttribute('aria-pressed',String(showLens));
   if(!showLens){$('lensBody').innerHTML='<div class="lens-hidden"><div class="lens-icon">◈</div><h3>Trust your read.</h3><p>Choose your dice first. Reveal the lens whenever you want to compare your options.</p><span>BEST HOLD · WORST HOLD · ODDS</span></div>';return;}
-  if(!myTurn){$('lensBody').innerHTML='<div class="lens-hidden"><div class="lens-icon">◈</div><h3>Ready when you roll.</h3><p>Your legal holds, best and worst choices, and outcome probabilities appear during your turn.</p></div>';return;}
+  if(!myTurn){renderRoundChances();return;}
   const best=options[0],worst=options.at(-1),holdText=h=>h.faces.join(' · ');
   const bestWin=options.reduce((a,b)=>b.win>a.win+1e-12?b:a),bestAlive=options.reduce((a,b)=>b.survive>a.survive+1e-12?b:a);
   const selected=dice.filter((_,i)=>selection.has(i)).sort((a,b)=>a-b).join(',');
@@ -68,6 +68,24 @@ function renderLens(myTurn){
   const short=game.order.some(i=>game.players[i].bank<game.ante);
   $('lensBody').innerHTML=`<div class="analysis"><p><b>Play for expected return</b><br>${advisor.known.length?`Posted target: ${advisor.target}. `:''}${advisor.future} opponent${advisor.future===1?'':'s'} still to act.</p><div class="recommend"><span class="eyebrow">BEST EV${options.filter(h=>joint(h,best)).length>1?' · JOINT BEST':''}</span><strong>Keep ${holdText(best)}</strong><strong>${signedMoney(best.ev)} expected round profit</strong><small>${pct(best.win)} win now + ${pct(best.viaPlayoff)} win through a push = ${pct(best.eventual)} total win</small><br><button id="useBest" class="quiet" style="margin-top:12px">Select this hold</button></div><p>${explanation}</p><p><b>Highest win-now row:</b> keep ${holdText(bestWin)} · ${pct(bestWin.win)}<br><b>Highest win-or-tie row:</b> keep ${holdText(bestAlive)} · ${pct(bestAlive.survive)}</p><div class="ev-breakdown"><p><b>Push chance:</b> ${pct(best.tie)}<br><b>Win it if you enter:</b> ${best.tie>1e-12?pct(best.viaPlayoff/best.tie):'— (no push entry)'}<br><b>Expected extra antes:</b> ${money(best.extraCost)}<br><b>Already paid this round:</b> ${money(game.paid[0])}</p></div><div class="option-list"><table><thead><tr><th>HOLD</th><th>WIN NOW</th><th>PUSH</th><th>TOTAL WIN</th><th>NET EV</th></tr></thead><tbody>${options.map(h=>`<tr class="${joint(h,best)?'best':joint(h,worst)?'worst':''}"><td>${holdText(h)}${h.faces.join(',')===selected?' ✓':''}<span class="badge">${joint(h,best)?'BEST EV':joint(h,worst)?'WORST EV':''}</span><br><small>${h.mean.toFixed(2)} avg</small></td><td>${pct(h.win)}</td><td>${pct(h.tie)}</td><td>${pct(h.eventual)}</td><td>${signedMoney(h.ev)}</td></tr>`).join('')}</tbody></table></div><p>NET EV = expected full-pot payout minus all your antes, including future push antes. Each row assumes EV-advised play on your remaining rolls this turn. AVG projects a full five-dice score even on branches that bust. Total win includes wins now and through any number of pushes; a push entry is not counted as a win.</p><details class="model-note"><summary>How the push estimate works</summary><p>The pot carries forward; only tied players re-ante and their order reverses. Multiway and repeated ties are included. Opponents follow the actual computers’ target-aware policy. Future push turns assume that same policy for everyone, including you. Your remaining rolls in this turn are optimized for EV; following improved advice in later pushes can change the results. This is the best current-turn return under that model, not a universal optimum.</p><p>Assumes everyone can cover required push antes. Your current ante is already paid and counts toward round profit; it does not change which hold is best.</p></details>${short?'<p class="funding-note">At least one seat cannot cover another ante. A tie involving that seat will pause the actual game; modeled push returns assume it can be funded.</p>':''}</div>`;
   $('useBest').onclick=()=>setSelection(best.indices);
+}
+
+function renderRoundChances(){
+  let {order,scores,pot,ante,phase}=game,paid=game.paid[0]??0;
+  let context;
+  if(phase==='ready'){
+    scores={};pot=order.length*ante;paid=ante;context='Before the opening roll';
+  }else if(phase==='tie'){
+    order=game.previous.playoffOrder;scores={};pot+=order.length*ante;paid+=order.includes(0)?ante:0;
+    context=`Before the ${pushName(game.playoff+1).toLowerCase()} · next order: ${order.map(i=>game.players[i].name).join(' → ')}`;
+  }else if(phase==='complete')context='Final result for this round';
+  else{
+    const pending=order.filter(i=>!Object.hasOwn(scores,i));
+    context=pending.length?`Before ${game.players[pending[0]].name} rolls · ${pending.length} player${pending.length===1?'':'s'} still to act`:'All turns finished';
+  }
+  const row=liveRoundChances({order,hero:0,scores,pot,ante,paid});
+  const posted=Object.hasOwn(scores,0),score=Number.isFinite(scores[0])?scores[0]:'BUST';
+  $('lensBody').innerHTML=`<div class="analysis round-chances" aria-live="polite"><h3>Your round chances</h3><p>${context}${posted?`<br><b>Your posted score: ${score}</b>`:''}</p><div class="chance-grid">${[['Win outright',row.win],['Push (tie)',row.tie],['Lose this pass',row.lose]].map(([label,value])=>`<div><span>${label}</span><strong>${pct(value)}</strong></div>`).join('')}</div><p><b>${pct(row.eventual)} total chance to win</b>, including repeated pushes.<br>${signedMoney(row.ev)} expected round profit.</p><p>Win outright = take the pot this pass. Push = tie for the lowest score and ante again in reverse order. A push is not a win.</p><p class="forecast-note">${posted?'Uses your actual posted score and all known results.':'Before your turn, this forecast assumes you follow the same target-aware policy as the computers; your choices can change these odds.'} Remaining computer turns use their actual strategy. Future pushes assume that policy for everyone and enough bankroll to re-ante.</p></div>`;
 }
 
 function renderScoreOdds(){

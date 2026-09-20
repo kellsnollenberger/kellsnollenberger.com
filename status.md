@@ -16,3 +16,5 @@ Live domain: kellsnollenberger.com. GitHub Pages publishes the repository's `mai
 - Game branding is now simply “Threes.” Score-to-odds also uses the playoff model. Current human-turn continuations optimize EV; later playoff turns are a fixed-policy forecast.
 
 - User terminology: a tie is a push; consecutive ties are a double push, triple push, etc. Every push charges only the remaining tied players another full ante and reverses their order. At $5, contributions progress $5 → $10 → $15. Seats now show total contributions; push confirmation shows each new total and the next pot. Eliminated players’ money stays in the pot.
+
+- Added automatic “Your round chances” between turns: actual posted score and known results determine outright-win, push, loss, eventual-win, and net-profit forecasts. Updates before each remaining player acts, including pushes and busts. Before the human has played, the forecast explicitly assumes the computer policy. Verified against conditional score odds and all initial seat positions with 2–5 players, plus game and rendered UI regressions.

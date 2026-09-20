@@ -1,4 +1,4 @@
-import {createAdvisor,rolls} from './engine.js?v=6';
+import {createAdvisor,rolls} from './engine.js?v=7';
 
 // Exact enumeration under the existing computer policy. This is a specified
 // continuation model, not a Nash equilibrium or a globally optimal policy.
@@ -100,4 +100,37 @@ export function createEVAdvisor(context){
   const known=context.order.filter(i=>i!==context.hero&&Object.hasOwn(context.scores,i)).map(i=>context.scores[i]);
   const future=context.order.filter(i=>i!==context.hero&&!Object.hasOwn(context.scores,i)).length;
   return createAdvisor(known,future,playoffScoreValues(context));
+}
+
+// Forecast the current pass from posted scores, before remaining players roll.
+// Unplayed turns use the same position-aware policy as the computer players.
+export function liveRoundChances({order,hero,scores={},pot,ante,paid=0}){
+  const result={win:0,tie:0,eventual:0,ev:-paid};
+  if(!order.includes(hero))return {...result,lose:1};
+  let low=Infinity,mask=0;
+  order.forEach((id,i)=>{if(!Object.hasOwn(scores,id)||!Number.isFinite(scores[id]))return;if(scores[id]<low){low=scores[id];mask=1<<i;}else if(scores[id]===low)mask|=1<<i;});
+  let states=new Map([[low*32+mask,1]]);
+  const pending=order.filter(id=>!Object.hasOwn(scores,id));
+  pending.forEach((id,at)=>{
+    const next=new Map(),seat=order.indexOf(id);
+    for(const [key,p] of states){
+      const target=Number.isFinite(key)?Math.floor(key/32):Infinity,leaders=Number.isFinite(key)?key%32:0;
+      const d=policyDistribution(target,pending.length-at-1);
+      d.forEach((prob,score)=>{if(prob)add(next,score<target?score*32+(1<<seat):target*32+(score===target?leaders|(1<<seat):leaders),p*prob);});
+    }
+    states=next;
+  });
+  const heroSeat=order.indexOf(hero);
+  for(const [key,p] of states){
+    if(!Number.isFinite(key))continue;
+    const tied=members(key%32,order.length);
+    if(!tied.includes(heroSeat))continue;
+    if(tied.length===1){result.win+=p;result.eventual+=p;result.ev+=p*pot;}
+    else{
+      const n=tied.length,position=n-1-tied.indexOf(heroSeat),model=playoffModel(n),w=model.win[position];
+      result.tie+=p;result.eventual+=p*w;
+      result.ev+=p*(w*(pot+n*ante)+ante*model.adjustment[position]-ante);
+    }
+  }
+  return {...result,lose:Math.max(0,1-result.win-result.tie)};
 }
