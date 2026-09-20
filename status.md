@@ -14,3 +14,5 @@ Live domain: kellsnollenberger.com. GitHub Pages publishes the repository's `mai
 - Matched simulator styling to the main website: Cairo headings, IBM Plex Mono text, dark brown background, cream text, copper accents, square panels. Strategy advice is shown automatically on rolls; score-to-odds section opens by default. Hide/reveal remains available. Asset version query avoids stale styling after this update.
 
 - Game branding is now simply “Threes.” Score-to-odds also uses the playoff model. Current human-turn continuations optimize EV; later playoff turns are a fixed-policy forecast.
+
+- User terminology: a tie is a push; consecutive ties are a double push, triple push, etc. Every push charges only the remaining tied players another full ante and reverses their order. At $5, contributions progress $5 → $10 → $15. Seats now show total contributions; push confirmation shows each new total and the next pot. Eliminated players’ money stays in the pot.

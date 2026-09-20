@@ -1,4 +1,4 @@
-import {createAdvisor,rolls} from './engine.js?v=5';
+import {createAdvisor,rolls} from './engine.js?v=6';
 
 // Exact enumeration under the existing computer policy. This is a specified
 // continuation model, not a Nash equilibrium or a globally optimal policy.
