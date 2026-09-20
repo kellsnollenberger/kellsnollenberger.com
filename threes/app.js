@@ -1,6 +1,6 @@
-import {points} from './engine.js?v=7';
-import {playoffScoreValues,liveRoundChances} from './playoffs.js?v=7';
-import {Game} from './game.js?v=7';
+import {points} from './engine.js?v=8';
+import {playoffScoreValues,liveRoundChances} from './playoffs.js?v=8';
+import {Game} from './game.js?v=8';
 const pushName=n=>n===1?'Push':n===2?'Double push':n===3?'Triple push':`${n}× push`;
 const signedMoney=c=>(c>=0?'+':'−')+money(Math.abs(c));
 const $=id=>document.getElementById(id),money=c=>(c/100).toLocaleString('en-US',{style:'currency',currency:'USD'}),pct=x=>(x*100).toFixed(1)+'%';
@@ -21,12 +21,15 @@ function render(){
   const posted=Object.values(scores).filter(Number.isFinite);$('target').textContent=phase==='turn'&&posted.length?`LOW SCORE TO BEAT: ${Math.min(...posted)}`:'';
   $('locked').innerHTML=myTurn?locked.map(f=>`<span title="Locked ${f}: ${points(f)} points">${f}</span>`).join(''):'';
   $('dice').innerHTML=myTurn?dice.map((f,i)=>`<button class="die ${f===3?'three':''} ${selection.has(i)?'selected':''}" data-die="${i}" aria-label="Die ${i+1}: ${f}, ${points(f)} points" aria-pressed="${selection.has(i)}">${pipLocations[f].map(p=>`<span class="pip" style="grid-row:${Math.floor(p/3)+1};grid-column:${p%3+1}"></span>`).join('')}</button>`).join(''):phase==='ready'?[3,1,3,2,3].map(f=>`<span class="die ${f===3?'three':''}">${pipLocations[f].map(p=>`<span class="pip" style="grid-row:${Math.floor(p/3)+1};grid-column:${p%3+1}"></span>`).join('')}</span>`).join(''):'';
+  if(phase==='bust'){
+    $('dice').innerHTML=dice.map((f,i)=>`<span class="die ${f===3?'three':''}" role="img" aria-label="Last roll die ${i+1}: ${f}, ${points(f)} points">${pipLocations[f].map(p=>`<span class="pip" style="grid-row:${Math.floor(p/3)+1};grid-column:${p%3+1}"></span>`).join('')}</span>`).join('');
+  }
   $('clear').hidden=!myTurn||selection.size===0;$('action').disabled=myTurn&&!selection.size;
   if(phase==='ready'){
     $('phase').textContent='TAKE YOUR SEAT';$('headline').textContent='Let the low rolls win.';$('message').textContent='Threes count as zero. Hold at least one die each roll.';$('action').textContent=`Deal me in · ${money(ante)} ante`;$('hint').textContent='Play money only · strategy shown automatically';
   }else if(phase==='bust'){
     $('phase').textContent='TURN ENDED · BUST';$('headline').textContent=active()===0?'You’re bust.':`${players[active()].name} is bust.`;
-    $('message').textContent=game.bustReason+' No more dice to play.';
+    $('message').textContent=game.bustReason+' Your last roll is shown below.';
     $('action').textContent=cursor+1<order.length?'Continue to next player':'See round result';$('action').disabled=false;
     $('hint').textContent='Matching the low score is still alive. Exceeding it ends your turn.';
   }else if(phase==='tie'){

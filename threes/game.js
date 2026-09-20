@@ -1,5 +1,5 @@
-import {points,createAdvisor,rotateOrder,settle,rollDice,isBust} from './engine.js?v=7';
-import {createEVAdvisor} from './playoffs.js?v=7';
+import {points,createAdvisor,rotateOrder,settle,rollDice,isBust} from './engine.js?v=8';
+import {createEVAdvisor} from './playoffs.js?v=8';
 const names=['You','Mara','Jules','Theo','Rae'];
 export class Game {
   constructor(bank=10000,count=3,ante=500,random=Math.random){
@@ -43,9 +43,9 @@ export class Game {
     if(this.phase!=='turn'||this.active()===0)return;
     let left=5,total=0;
     while(left){
-      const r=rollDice(left,this.random);
+      const r=rollDice(left,this.random);this.dice=[...r];
       if(isBust(total,this.advisor.target,r)){this.bust(total,true);return;}
-      const best=this.advisor.analyze(r,total)[0];total+=best.sum;left-=best.count;
+      const best=this.advisor.analyze(r,total)[0];total+=best.sum;left-=best.count;this.locked.push(...best.faces);
       if(isBust(total,this.advisor.target)){this.bust(total);return;}
     }
     this.scores[this.active()]=total;this.advance();

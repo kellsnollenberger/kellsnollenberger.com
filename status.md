@@ -18,3 +18,5 @@ Live domain: kellsnollenberger.com. GitHub Pages publishes the repository's `mai
 - User terminology: a tie is a push; consecutive ties are a double push, triple push, etc. Every push charges only the remaining tied players another full ante and reverses their order. At $5, contributions progress $5 → $10 → $15. Seats now show total contributions; push confirmation shows each new total and the next pot. Eliminated players’ money stays in the pot.
 
 - Added automatic “Your round chances” between turns: actual posted score and known results determine outright-win, push, loss, eventual-win, and net-profit forecasts. Updates before each remaining player acts, including pushes and busts. Before the human has played, the forecast explicitly assumes the computer policy. Verified against conditional score odds and all initial seat positions with 2–5 players, plus game and rendered UI regressions.
+
+- Bust screens now retain the actual last roll as non-interactive dice for both the human and computers until Continue is pressed. Verified forced human/computer bust displays and game regressions.
