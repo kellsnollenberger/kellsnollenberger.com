@@ -17,19 +17,28 @@ for(let n=1;n<=5;n++){
   }
   enumerate([],1);
 }
-// Translation-invariant exact minimum-mean policy; full terminal distribution.
-export const baseline = [Array(31).fill(0)]; baseline[0][0]=1;
-const means=[0];
-for(let n=1;n<=5;n++){
+// Full-score dynamic program: five sixes (raw total 30) scores zero.
+export const finalScore = score => score===30?0:score;
+export const scoreDice = dice => finalScore(dice.reduce((s,f)=>s+points(f),0));
+const meanMemo=new Map();
+function meanDistribution(n,score){
+  const key=n*31+score;if(meanMemo.has(key))return meanMemo.get(key);
   const dist=Array(31).fill(0);
+  if(!n){dist[finalScore(score)]=1;return dist;}
   for(const roll of rolls[n]){
-    const best=roll.options.reduce((a,b)=>b.sum+means[n-b.count]<a.sum+means[n-a.count]-1e-12?b:a);
-    baseline[n-best.count].forEach((p,s)=>{if(p)dist[s+best.sum]+=p*roll.prob;});
+    let best,mean=Infinity;
+    for(const hold of roll.options){
+      const d=meanDistribution(n-hold.count,score+hold.sum),m=d.reduce((v,p,i)=>v+p*i,0);
+      if(m<mean-1e-12){mean=m;best=d;}
+    }
+    best.forEach((p,i)=>dist[i]+=p*roll.prob);
   }
-  baseline[n]=dist;means[n]=dist.reduce((s,p,i)=>s+p*i,0);
+  meanMemo.set(key,dist);return dist;
 }
+export const baseline=Array.from({length:6},(_,n)=>meanDistribution(n,0));
 // A tied low score reaches a playoff; it does not receive a share of the pot.
-export function isBust(score,target,dice=[]){
+export function isBust(score,target,dice=[],locked=null){
+  if(locked&&locked.every(f=>f===6)&&(locked.length===5||!dice.length||dice.includes(6)))return false;
   return Number.isFinite(target) && (score>target || (dice.length>0 && score+Math.min(...dice.map(points))>target));
 }
 export function createAdvisor(known=[],future=0,terminalValues=null){
@@ -46,7 +55,7 @@ export function createAdvisor(known=[],future=0,terminalValues=null){
   function compare(a,b){if(objective==='ev')return Math.abs(a.ev-b.ev)>1e-8?b.ev-a.ev:Math.abs(a.eventual-b.eventual)>1e-12?b.eventual-a.eventual:a.mean-b.mean;return objective==='mean'?(a.mean-b.mean||b.survive-a.survive):(Math.abs(a.survive-b.survive)>1e-12?b.survive-a.survive:Math.abs(a.win-b.win)>1e-12?b.win-a.win:a.mean-b.mean);}
   const fields=Object.keys(terminal[0]);
   function state(n,score){
-    if(!n)return terminal[score];
+    if(!n)return terminal[finalScore(score)];
     const key=n*31+score;if(memo.has(key))return memo.get(key);
     const result=Object.fromEntries(fields.map(key=>[key,0]));
     for(const roll of rolls[n]){

@@ -1,5 +1,5 @@
-import {points,createAdvisor,rotateOrder,settle,rollDice,isBust} from './engine.js?v=10';
-import {createEVAdvisor} from './playoffs.js?v=10';
+import {points,scoreDice,createAdvisor,rotateOrder,settle,rollDice,isBust} from './engine.js?v=11';
+import {createEVAdvisor} from './playoffs.js?v=11';
 const names=['You','Mara','Jules','Theo','Rae'];
 export class Game {
   constructor(bank=10000,count=3,ante=500,random=Math.random){
@@ -36,7 +36,7 @@ export class Game {
   }
   rollHuman(){
     const score=this.locked.reduce((s,f)=>s+points(f),0);this.dice=rollDice(5-this.locked.length,this.random);
-    if(isBust(score,this.advisor.target,this.dice)){this.bust(score,true);return;}
+    if(isBust(score,this.advisor.target,this.dice,this.locked)){this.bust(score,true);return;}
     this.options=this.advisor.analyze(this.dice,score);
   }
   computerTurn(){
@@ -44,11 +44,11 @@ export class Game {
     let left=5,total=0;
     while(left){
       const r=rollDice(left,this.random);this.dice=[...r];
-      if(isBust(total,this.advisor.target,r)){this.bust(total,true);return;}
+      if(isBust(total,this.advisor.target,r,this.locked)){this.bust(total,true);return;}
       const best=this.advisor.analyze(r,total)[0];total+=best.sum;left-=best.count;this.locked.push(...best.faces);
-      if(isBust(total,this.advisor.target)){this.bust(total);return;}
+      if(isBust(total,this.advisor.target,[],this.locked)){this.bust(total);return;}
     }
-    this.scores[this.active()]=total;this.advance();
+    this.scores[this.active()]=scoreDice(this.locked);this.advance();
   }
   advance(){
     this.phase='turn';this.cursor++;
@@ -65,8 +65,8 @@ export class Game {
     if(this.phase!=='turn'||this.active()!==0||!this.selection.size)return;
     this.locked.push(...this.dice.filter((_,i)=>this.selection.has(i)));this.selection.clear();
     const score=this.locked.reduce((s,f)=>s+points(f),0);
-    if(isBust(score,this.advisor.target)){this.bust(score);return;}
-    if(this.locked.length===5){this.scores[0]=score;this.advance();}else this.rollHuman();
+    if(isBust(score,this.advisor.target,[],this.locked)){this.bust(score);return;}
+    if(this.locked.length===5){this.scores[0]=scoreDice(this.locked);this.advance();}else this.rollHuman();
   }
   setSelection(indices){
     if(this.phase!=='turn'||this.active()!==0)throw new Error('Wait for your turn.');

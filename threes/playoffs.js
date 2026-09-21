@@ -1,4 +1,4 @@
-import {createAdvisor,rolls} from './engine.js?v=10';
+import {createAdvisor,rolls,finalScore} from './engine.js?v=11';
 
 // Exact enumeration under the existing computer policy. This is a specified
 // continuation model, not a Nash equilibrium or a globally optimal policy.
@@ -11,7 +11,7 @@ export function policyDistribution(target=Infinity,future=0){
     const key=n*31+score;
     if(memo.has(key))return memo.get(key);
     const result=new Float64Array(31);
-    if(!n){result[score]=1;return result;}
+    if(!n){result[finalScore(score)]=1;return result;}
     for(const roll of rolls[n]){
       let best=null,value=null;
       for(const hold of roll.options){const next=advisor.state(n-hold.count,score+hold.sum);if(!best||advisor.compare(next,value)<0){best=hold;value=next;}}
