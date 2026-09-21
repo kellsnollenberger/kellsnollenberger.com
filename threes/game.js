@@ -1,5 +1,5 @@
-import {points,scoreDice,createAdvisor,rotateOrder,settle,rollDice,isBust} from './engine.js?v=11';
-import {createEVAdvisor} from './playoffs.js?v=11';
+import {points,scoreDice,createAdvisor,rotateOrder,settle,rollDice,isBust} from './engine.js?v=12';
+import {createEVAdvisor} from './playoffs.js?v=12';
 const names=['You','Mara','Jules','Theo','Rae'];
 export class Game {
   constructor(bank=10000,count=3,ante=500,random=Math.random){
@@ -36,6 +36,7 @@ export class Game {
   }
   rollHuman(){
     const score=this.locked.reduce((s,f)=>s+points(f),0);this.dice=rollDice(5-this.locked.length,this.random);
+    this.onRoll?.({dice:[...this.dice],locked:[...this.locked],player:this.players[this.active()].name});
     if(isBust(score,this.advisor.target,this.dice,this.locked)){this.bust(score,true);return;}
     this.options=this.advisor.analyze(this.dice,score);
   }
@@ -44,6 +45,7 @@ export class Game {
     let left=5,total=0;
     while(left){
       const r=rollDice(left,this.random);this.dice=[...r];
+      this.onRoll?.({dice:[...r],locked:[...this.locked],player:this.players[this.active()].name});
       if(isBust(total,this.advisor.target,r,this.locked)){this.bust(total,true);return;}
       const best=this.advisor.analyze(r,total)[0];total+=best.sum;left-=best.count;this.locked.push(...best.faces);
       if(isBust(total,this.advisor.target,[],this.locked)){this.bust(total);return;}

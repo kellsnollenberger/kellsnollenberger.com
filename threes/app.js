@@ -1,13 +1,36 @@
-import {points} from './engine.js?v=11';
-import {playoffScoreValues,liveRoundChances} from './playoffs.js?v=11';
-import {Game} from './game.js?v=11';
+import {points} from './engine.js?v=12';
+import {playoffScoreValues,liveRoundChances} from './playoffs.js?v=12';
+import {Game} from './game.js?v=12';
 const pushName=n=>n===1?'Push':n===2?'Double push':n===3?'Triple push':`${n}× push`;
 const signedMoney=c=>(c>=0?'+':'−')+money(Math.abs(c));
 const $=id=>document.getElementById(id),money=c=>(c/100).toLocaleString('en-US',{style:'currency',currency:'USD'}),pct=x=>(x*100).toFixed(1)+'%';
-let game,showLens=true;
+let game,showLens=true,rolling=false;
 function fresh(bank=10000,count=3,bet=500){game=new Game(bank,count,bet);showLens=true;render();}
-function setSelection(indices){game.setSelection(indices);render();}
-function action(){game.action();$('settings').hidden=true;render();}
+function setSelection(indices){if(rolling)return;game.setSelection(indices);render();}
+async function action(){
+  if(rolling)return;
+  const rolls=[];game.onRoll=roll=>rolls.push(roll);
+  try{game.action();}finally{delete game.onRoll;}
+  $('settings').hidden=true;
+  if(!rolls.length||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){render();return;}
+  rolling=true;
+  for(const id of ['action','clear','settingsToggle','lensToggle'])$(id).disabled=true;
+  $('action').textContent='Rolling…';$('dice').setAttribute('aria-busy','true');
+  $('lensBody').innerHTML='<div class="lens-hidden"><h3>Dice are rolling…</h3><p>Your updated chances appear when they land.</p></div>';
+  try{
+    for(const roll of rolls){
+      $('headline').textContent=roll.player==='You'?'Rolling your dice…':`${roll.player} is rolling…`;
+      $('message').textContent=`${roll.dice.length} ${roll.dice.length===1?'die':'dice'} rolling · ${roll.locked.length} held`;
+      $('locked').innerHTML=roll.locked.map(f=>`<span title="Held die">${f}</span>`).join('');
+      $('dice').innerHTML=roll.dice.map((f,i)=>`<span class="die rolling-die ${f===3?'three':''}" style="--roll-delay:${i*25}ms" role="img" aria-label="Rolling die">${pipLocations[f].map(p=>`<span class="pip" style="grid-row:${Math.floor(p/3)+1};grid-column:${p%3+1}"></span>`).join('')}</span>`).join('');
+      await new Promise(resolve=>setTimeout(resolve,560));
+    }
+  }finally{
+    rolling=false;$('dice').setAttribute('aria-busy','false');
+    for(const id of ['clear','lensToggle'])$(id).disabled=false;
+    render();
+  }
+}
 const pipLocations={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
 function render(){
   const {players,ante,leader,round,playoff,order,cursor,scores,busts,pot,dice,locked,selection,phase,advisor,history,previous}=game;
@@ -108,10 +131,10 @@ function renderScoreOdds(){
 }
 $('oddsMode').onchange=renderScoreOdds;$('oddsPlayers').onchange=renderScoreOdds;
 $('action').onclick=action;$('clear').onclick=()=>setSelection([]);
-$('dice').onclick=e=>{const b=e.target.closest('[data-die]');if(!b)return;const i=Number(b.dataset.die);game.selection.has(i)?game.selection.delete(i):game.selection.add(i);render();};
-$('lensToggle').onclick=()=>{showLens=!showLens;render();};
+$('dice').onclick=e=>{if(rolling)return;const b=e.target.closest('[data-die]');if(!b)return;const i=Number(b.dataset.die);game.selection.has(i)?game.selection.delete(i):game.selection.add(i);render();};
+$('lensToggle').onclick=()=>{if(rolling)return;showLens=!showLens;render();};
 $('settingsToggle').onclick=()=>{$('settings').hidden=!$('settings').hidden;};
-$('settings').onsubmit=e=>{e.preventDefault();if(['turn','bust'].includes(game.phase))return;const bank=Math.round(Number($('starting').value)*100),bet=Math.round(Number($('ante').value)*100),count=Number($('opponents').value)+1;if(!Number.isFinite(bank)||!Number.isFinite(bet)||bank<100||bet<1||bet>bank||bank>100000000||![2,3,4,5].includes(count)){$('ante').setCustomValidity('Ante must be positive and no more than the starting bankroll.');$('ante').reportValidity();return;}$('ante').setCustomValidity('');$('settings').hidden=true;fresh(bank,count,bet);};
+$('settings').onsubmit=e=>{e.preventDefault();if(rolling)return;if(['turn','bust'].includes(game.phase))return;const bank=Math.round(Number($('starting').value)*100),bet=Math.round(Number($('ante').value)*100),count=Number($('opponents').value)+1;if(!Number.isFinite(bank)||!Number.isFinite(bet)||bank<100||bet<1||bet>bank||bank>100000000||![2,3,4,5].includes(count)){$('ante').setCustomValidity('Ante must be positive and no more than the starting bankroll.');$('ante').reportValidity();return;}$('ante').setCustomValidity('');$('settings').hidden=true;fresh(bank,count,bet);};
 $('ante').oninput=()=> $('ante').setCustomValidity('');$('starting').oninput=()=> $('ante').setCustomValidity('');
 function snapshot(){return game.snapshot();}
 fresh();

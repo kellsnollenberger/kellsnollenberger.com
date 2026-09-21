@@ -26,3 +26,5 @@ Live domain: kellsnollenberger.com. GitHub Pages publishes the repository's `mai
 - Hold-choice labels now list dice by scoring value: 3, 1, 2, 4, 5, 6. The advice ranking and physical dice selection remain unchanged.
 
 - Shoot the moon enabled: a completed five-six hand scores zero, including sixes kept across rolls. It ties other zero scores normally. Busts are deferred while an all-six completion remains possible; a roll without any six ends an over-target moon chase. Human EV advice, computer policy, score distributions, live forecasts, and repeated-push modeling all include the rule. Verified staged human/computer moons against a posted zero, failed chases, tied moons, probability normalization, live odds, UI, and 200 complete rounds conserving bankroll.
+
+- Added short staggered dice-tumble animations for each actual human/computer roll, including rerolls. Held dice stay visible; controls lock during playback and reduced-motion preferences skip animation. Verified duplicate-click prevention, reroll counts, final controls, browser animation, and moon-scoring regressions.
