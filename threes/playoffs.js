@@ -1,4 +1,4 @@
-import {createAdvisor,rolls,finalScore} from './engine.js?v=12';
+import {createAdvisor,rolls,finalScore} from './engine.js?v=13';
 
 // Exact enumeration under the existing computer policy. This is a specified
 // continuation model, not a Nash equilibrium or a globally optimal policy.
@@ -74,7 +74,8 @@ export function playoffScoreValues({order,hero,scores={},pot,ante,paid=0}){
   if(!order.includes(hero)||order.length<2||order.length>5||ante<=0)throw new Error('Invalid playoff scenario.');
   const earlier=order.filter(i=>i!==hero&&Object.hasOwn(scores,i)),unknown=order.filter(i=>i!==hero&&!Object.hasOwn(scores,i));
   const target=Math.min(...earlier.map(i=>scores[i]));
-  return Array.from({length:31},(_,score)=>{
+  return Array.from({length:31},(_,rawScore)=>{
+    const score=finalScore(rawScore);
     const result={mean:score,win:0,tie:0,survive:0,eventual:0,viaPlayoff:0,extraCost:0,ev:-paid};
     if(score>target)return result;
     const initial=order.reduce((mask,id,i)=>id===hero||(earlier.includes(id)&&scores[id]===score)?mask|(1<<i):mask,0);
