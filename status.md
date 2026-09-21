@@ -22,3 +22,5 @@ Live domain: kellsnollenberger.com. GitHub Pages publishes the repository's `mai
 - Bust screens now retain the actual last roll as non-interactive dice for both the human and computers until Continue is pressed. Verified forced human/computer bust displays and game regressions.
 
 - Renamed the live loss card to “Lose this round” and promoted “Eventual win” into its own highlighted percentage card, explaining that it includes outright wins and wins after repeated pushes (not an additional mutually exclusive outcome).
+
+- Hold-choice labels now list dice by scoring value: 3, 1, 2, 4, 5, 6. The advice ranking and physical dice selection remain unchanged.

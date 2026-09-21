@@ -1,6 +1,6 @@
-import {points} from './engine.js?v=9';
-import {playoffScoreValues,liveRoundChances} from './playoffs.js?v=9';
-import {Game} from './game.js?v=9';
+import {points} from './engine.js?v=10';
+import {playoffScoreValues,liveRoundChances} from './playoffs.js?v=10';
+import {Game} from './game.js?v=10';
 const pushName=n=>n===1?'Push':n===2?'Double push':n===3?'Triple push':`${n}× push`;
 const signedMoney=c=>(c>=0?'+':'−')+money(Math.abs(c));
 const $=id=>document.getElementById(id),money=c=>(c/100).toLocaleString('en-US',{style:'currency',currency:'USD'}),pct=x=>(x*100).toFixed(1)+'%';
@@ -63,7 +63,7 @@ function renderLens(myTurn){
   $('lensToggle').textContent=showLens?'Hide':'Reveal';$('lensToggle').setAttribute('aria-pressed',String(showLens));
   if(!showLens){$('lensBody').innerHTML='<div class="lens-hidden"><div class="lens-icon">◈</div><h3>Trust your read.</h3><p>Choose your dice first. Reveal the lens whenever you want to compare your options.</p><span>BEST HOLD · WORST HOLD · ODDS</span></div>';return;}
   if(!myTurn){renderRoundChances();return;}
-  const best=options[0],worst=options.at(-1),holdText=h=>h.faces.join(' · ');
+  const best=options[0],worst=options.at(-1),holdText=h=>[...h.faces].sort((a,b)=>points(a)-points(b)).join(' · ');
   const bestWin=options.reduce((a,b)=>b.win>a.win+1e-12?b:a),bestAlive=options.reduce((a,b)=>b.survive>a.survive+1e-12?b:a);
   const selected=dice.filter((_,i)=>selection.has(i)).sort((a,b)=>a-b).join(',');
   const joint=(a,b)=>Math.abs(a.ev-b.ev)<1e-7;
